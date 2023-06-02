@@ -18,7 +18,7 @@ def start_server(host, puerto):
             print("Servidor detenido")
 
 def read_log(msg):
-    archivo = open("txt/log.txt", "w")
+    archivo = open("d:/Snake_LAN/log.txt", "w")
     archivo.write(msg)
     archivo.close()
 
