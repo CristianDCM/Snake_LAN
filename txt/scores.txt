@@ -1,0 +1,4 @@
+cris 1
+llk 0
+pola 0
+pola 0
