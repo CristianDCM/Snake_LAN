@@ -34,6 +34,7 @@ python snake_game.py
 - El juego termina cuando la serpiente choca con los límites de la ventana o consigo misma.
 - La puntuación del jugador se muestra en la ventana del juego.
 - Las puntuaciones más altas se guardan en un archivo llamado "scores.txt".
+- Implementación básica de comunicación en red a través de un archivo de registro LAN.
 
 ## Contribuciones
 
