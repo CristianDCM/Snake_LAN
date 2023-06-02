@@ -28,7 +28,7 @@ class SnakeGame:
         self.direction = "RIGHT"
         self.changeto = self.direction 
 
-    def game_over_screen(self):
+    def game_over_screen(self): #Game over screen
         my_font = pygame.font.SysFont('monaco', 72)
         go_surf = my_font.render('Game Over', True, red)
         go_rect = go_surf.get_rect()
@@ -39,14 +39,14 @@ class SnakeGame:
         self.save_score()
         self.show_menu()
 
-    def show_name(self):
+    def show_name(self): #Nickname screen
         ventana.fill(black)
         font = pygame.font.SysFont('monaco', 36)
         text = font.render("Ingrese su nickname", True, white) 
         text_rect = text.get_rect(center=(300, 100))
         ventana.blit(text, text_rect)
         pygame.display.flip()
-        while True:
+        while True: # Nickname input
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
@@ -57,7 +57,7 @@ class SnakeGame:
                     else:
                         self.nickname += event.unicode
             ventana.fill(black)
-            text = font.render("Ingrese su nickname", True, white)
+            text = font.render("Ingrese su nickname", True, white) 
             text_rect = text.get_rect(center=(300, 100))
             ventana.blit(text, text_rect)
             text = font.render(self.nickname, True, white)
@@ -65,18 +65,18 @@ class SnakeGame:
             ventana.blit(text, text_rect)
             pygame.display.flip()
 
-    def show_menu(self):
+    def show_menu(self): #Menu screen
         menu_options = ['Jugar', 'Tabla de Puntuaciones', 'Salir']
         selected_option = 0
         font = pygame.font.SysFont('monaco', 36)
         while True:
             ventana.fill(black)
-            for i, option in enumerate(menu_options):
+            for i, option in enumerate(menu_options): #Menu options
                 text = font.render(option, True, white if i == selected_option else red)
                 text_rect = text.get_rect(center=(300, 150 + i * 50))
                 ventana.blit(text, text_rect)
             pygame.display.flip()
-            for event in pygame.event.get():
+            for event in pygame.event.get(): #Menu navigation
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         selected_option = (selected_option - 1) % len(menu_options)
@@ -92,29 +92,29 @@ class SnakeGame:
                             pygame.quit()
                             quit()
 
-    def show_scores(self):
-        scores = []
-        file = open("txt/scores.txt", "r")
+    def show_scores(self): #Scoreboard screen
+        scores = [] 
+        file = open("d:/Snake_LAN/scores.txt", "r") #Read scores
         for line in file:
-            scores.append(line)
-        scores.sort(key=lambda x: int(x.split()[1]), reverse=True)
+            scores.append(line) 
+        scores.sort(key=lambda x: int(x.split()[1]), reverse=True)  
         file.close()
-        ventana.fill(black)
+        ventana.fill(black) #Show scores
         font = pygame.font.SysFont('monaco', 36)
         for i, score in enumerate(scores):
             text = font.render(str(i + 1) + ". " + score.split()[0] + " " + score.split()[1], True, white)
             text_rect = text.get_rect(center=(300, 150 + i * 50))
             ventana.blit(text, text_rect)
         pygame.display.flip()
-        time.sleep(5)
+        time.sleep(5) #Wait 5 seconds
         self.show_menu()
 
     def save_score(self):
-        file = open("txt/scores.txt", "a")
-        file.write(self.nickname + " " + str(self.score) + "\n")
+        file = open("d:/Snake_LAN/scores.txt", "a") #Save score
+        file.write(self.nickname + " " + str(self.score) + "\n") 
         file.close()
 
-    def start_game(self):
+    def start_game(self): #Game screen
         self.game_over = False
         self.snake_pos = [100, 50]
         self.snake_body = [[100, 50], [90, 50], [80, 50]]
@@ -123,12 +123,12 @@ class SnakeGame:
         self.score = 0
         self.direction = "RIGHT"
         self.changeto = self.direction
-        while not self.game_over:
-            self.mov_log()
-            for event in pygame.event.get():
+        while not self.game_over: # Game loop
+            self.mov_log() #Read log LAN <--------------------
+            for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     self.game_over = True
-                elif event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN: #Keyboard input
                     if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         self.changeto = "RIGHT"
                     if event.key == pygame.K_LEFT or event.key == pygame.K_a:
@@ -139,8 +139,11 @@ class SnakeGame:
                         self.changeto = "DOWN"
                     if event.key == pygame.K_ESCAPE:
                         pygame.event.post(pygame.event.Event(pygame.QUIT))
-            
-            if self.changeto == "RIGHT" and not self.direction == "LEFT":
+            """ 
+            Snake movement logic
+            direction = up not down -> change direction = up
+            """
+            if self.changeto == "RIGHT" and not self.direction == "LEFT": #Snake movement
                 self.direction = "RIGHT"
             if self.changeto == "LEFT" and not self.direction == "RIGHT":
                 self.direction = "LEFT"
@@ -148,6 +151,10 @@ class SnakeGame:
                 self.direction = "UP"
             if self.changeto == "DOWN" and not self.direction == "UP":
                 self.direction = "DOWN"
+            """
+            Snake direction
+            direction = up -> snake_pos[1] -= 10
+            """
             if self.direction == "RIGHT":
                 self.snake_pos[0] += 10
             if self.direction == "LEFT":
@@ -156,40 +163,44 @@ class SnakeGame:
                 self.snake_pos[1] -= 10
             if self.direction == "DOWN":
                 self.snake_pos[1] += 10
-            self.snake_body.insert(0, list(self.snake_pos))
+            self.snake_body.insert(0, list(self.snake_pos)) #Snake body
+            """
+            Snake food logic
+            head = food -> score + 1 -> food_spawn = False 
+            """
             if self.snake_pos[0] == self.food_pos[0] and self.snake_pos[1] == self.food_pos[1]:
                 self.score += 1
                 self.food_spawn = False
             else:
                 self.snake_body.pop()
-            if not self.food_spawn:
+            if not self.food_spawn: #Food spawn
                 self.food_pos = [random.randrange(1, 60) * 10, random.randrange(1, 40) * 10]
             self.food_spawn = True
             ventana.fill(black)
             for pos in self.snake_body:
                 pygame.draw.rect(ventana, green, pygame.Rect(pos[0], pos[1], 10, 10))
             pygame.draw.rect(ventana, brown, pygame.Rect(self.food_pos[0], self.food_pos[1], 10, 10))
-            if self.snake_pos[0] > 590 or self.snake_pos[0] < 0:
-                self.game_over_screen()
+            if self.snake_pos[0] > 590 or self.snake_pos[0] < 0: #Game over conditions X and Y 
+                self.game_over_screen() 
             if self.snake_pos[1] > 390 or self.snake_pos[1] < 0:
                 self.game_over_screen()
-            for block in self.snake_body[1:]:
-                if self.snake_pos[0] == block[0] and self.snake_pos[1] == block[1]:
+            for block in self.snake_body[1:]: 
+                if self.snake_pos[0] == block[0] and self.snake_pos[1] == block[1]: # Snake body collision
                     self.game_over_screen()
             pygame.display.set_caption("Snake | Score: " + str(self.score))
             pygame.display.flip()
             clock.tick(10)
          
-    def read_log(self):
-        archivo = open("txt/log.txt", "r")
+    def read_log(self): #Read log LAN
+        archivo = open("d:/Snake_LAN/log.txt", "r")
         msg = archivo.read()
         archivo.close()
         if msg == self.log_direction:
             return None
         return msg
     
-    def mov_log(self):
-        msg = self.read_log()
+    def mov_log(self): #Snake movement LAN
+        msg = self.read_log() #<-------------------- 
         if msg == None:
             return
         if msg == "arriba" and not self.direction == "abajo":
@@ -200,17 +211,17 @@ class SnakeGame:
             self.changeto = "RIGHT"
         if msg == "izquierda" and not self.direction == "derecha":
             self.changeto = "LEFT"
-        self.log_direction = msg
+        self.log_direction = msg 
 
 def main():
-    s =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # asocied to the socket
     s.connect(("8.8.8.8", 80))
-    host = s.getsockname()[0]
+    host = s.getsockname()[0] #ip Local
     port = 7800
     s.close()
-    server = threading.Thread(target=Servidor.start_server, args=(host, port))
+    server = threading.Thread(target=Servidor.start_server, args=(host, port)) # Second process
     server.start()
-    game = SnakeGame()
+    game = SnakeGame() # First process
     game.show_menu()
 
 if __name__ == "__main__":
